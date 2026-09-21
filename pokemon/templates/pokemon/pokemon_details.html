@@ -3,23 +3,43 @@
 {% block title %}Detalles - {{ pokemon.name|title }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 600px;">
-    <div class="card shadow">
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white text-dark">
         {% if pokemon.sprite_url %}
-            <img src="{{ pokemon.sprite_url }}" class="card-img-top p-4 bg-light" alt="{{ pokemon.name }}" style="height: 250px; object-fit: contain;">
-        {% endif %}
-        <div class="card-body text-center">
-            <h2 class="card-title text-capitalize">#{{ pokemon.poke_id }} - {{ pokemon.name }}</h2>
-            <hr>
-            <div class="row my-3 text-start">
-                <div class="col-6"><strong>Altura:</strong> {{ pokemon.height }} m</div>
-                <div class="col-6"><strong>Peso:</strong> {{ pokemon.weight }} kg</div>
+            <div class="bg-light p-4 text-center">
+                <img src="{{ pokemon.sprite_url }}" class="card-img-top img-fluid" alt="{{ pokemon.name }}" style="height: 220px; object-fit: contain;">
             </div>
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{% url 'pokemon_list' %}" class="btn btn-secondary">Volver a la Lista</a>
-                <div>
-                    <a href="{% url 'pokemon_update' pokemon.pk %}" class="btn btn-warning">Editar</a>
-                    <a href="{% url 'pokemon_delete' pokemon.pk %}" class="btn btn-danger">Eliminar</a>
+        {% endif %}
+        
+        <div class="card-body text-center p-4">
+            <h2 class="card-title text-capitalize fw-bold mb-3">
+                <span class="text-danger">#{{ pokemon.poke_id }}</span> - {{ pokemon.name }}
+            </h2>
+            
+            <hr class="text-muted opacity-25">
+            
+            <div class="row my-3 text-center bg-light py-3 rounded-4 border mx-1">
+                <div class="col-6 border-end">
+                    <span class="text-muted small d-block">Altura</span>
+                    <strong class="fs-5 text-dark">{{ pokemon.height }} m</strong>
+                </div>
+                <div class="col-6">
+                    <span class="text-muted small d-block">Peso</span>
+                    <strong class="fs-5 text-dark">{{ pokemon.weight }} kg</strong>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center gap-2 mt-4">
+                <a href="{% url 'pokemon_list' %}" class="btn btn-outline-secondary px-3 py-2 rounded-pill fw-semibold">
+                    Volver a la Lista
+                </a>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'pokemon_update' pokemon.pk %}" class="btn btn-warning px-4 py-2 rounded-pill fw-semibold text-dark shadow-sm">
+                        Editar
+                    </a>
+                    <a href="{% url 'pokemon_delete' pokemon.pk %}" class="btn btn-danger px-4 py-2 rounded-pill fw-semibold shadow-sm">
+                        Eliminar
+                    </a>
                 </div>
             </div>
         </div>

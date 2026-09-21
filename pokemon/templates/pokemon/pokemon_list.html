@@ -5,109 +5,126 @@ Pokédex - Lista
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-2">
 
-    <div class="text-center mb-4">
-        <h1 class="fw-bold">Pokédex</h1>
-        <p class="text-muted">
-            Lista de Pokémon
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 text-white mb-2">Pokédex Principal</h1>
+        <p class="text-secondary fs-5">
+            Lista de Pokémon sincronizados y gestión CRUD
         </p>
     </div>
 
-    <div class="text-center mb-4 d-flex justify-content-center gap-2">
+    <!-- Botones de Acción -->
+    <div class="text-center mb-5 d-flex justify-content-center gap-3 flex-wrap">
         <form action="{% url 'pokemon_sync_api' %}" method="POST" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-success">
-                Cargar Pokémon
+            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow rounded-pill">
+                ⚡ Cargar de la API
             </button>
         </form>
-        <a href="{% url 'pokemon_create' %}" class="btn btn-outline-primary">
-            + Crear Manualmente
+        <a href="{% url 'pokemon_create' %}" class="btn btn-outline-light px-4 py-2 fw-semibold shadow rounded-pill">
+            ➕ Crear Manualmente
         </a>
     </div>
 
+    <!-- Mensajes -->
     {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center shadow rounded-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+        </div>
     {% endif %}
 
+    <!-- Estado Vacío -->
     {% if not pokemons %}
-        <div class="alert alert-info text-center">
-            No hay Pokémon cargados en la base de datos.
+        <div class="alert alert-secondary text-center py-4 shadow rounded-4 fs-5 bg-dark text-white border-secondary">
+            No hay Pokémon en la base de datos. ¡Prueba cargándolos arriba!
         </div>
     {% else %}
+        <!-- Cuadrícula -->
         <div class="row g-4">
             {% for pokemon in pokemons %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="card h-100 shadow-sm text-center">
-                        {% if pokemon.sprite_url %}
-                            <img src="{{ pokemon.sprite_url }}"
-                                 class="card-img-top p-3"
-                                 alt="{{ pokemon.name }}"
-                                 style="height: 200px; object-fit: contain;">
-                        {% endif %}
+                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden bg-white text-dark hover-card">
+                        
+                        <div class="bg-light p-4 text-center">
+                            {% if pokemon.sprite_url %}
+                                <img src="{{ pokemon.sprite_url }}"
+                                     class="card-img-top img-fluid"
+                                     alt="{{ pokemon.name }}"
+                                     style="height: 150px; object-fit: contain;">
+                            {% endif %}
+                        </div>
 
-                        <div class="card-body">
-                            <h5 class="card-title text-capitalize">
-                                #{{ pokemon.poke_id }} - {{ pokemon.name }}
+                        <div class="card-body text-center d-flex flex-column p-4">
+                            <h5 class="card-title text-capitalize fw-bold text-dark mb-2">
+                                <span class="text-danger">#{{ pokemon.poke_id }}</span> {{ pokemon.name }}
                             </h5>
 
-                            <p class="card-text">
-                                <strong>Altura:</strong> {{ pokemon.height }} m<br>
-                                <strong>Peso:</strong> {{ pokemon.weight }} kg
+                            <p class="card-text text-muted small mb-4">
+                                <span class="badge bg-light text-dark border px-2 py-1 me-1">Altura: {{ pokemon.height }} m</span>
+                                <span class="badge bg-light text-dark border px-2 py-1">Peso: {{ pokemon.weight }} kg</span>
                             </p>
 
-                            <a href="{% url 'pokemon_detail' pokemon.pk %}"
-                               class="btn btn-primary btn-sm">
-                                Detalles
-                            </a>
+                            <div class="mt-auto">
+                                <a href="{% url 'pokemon_detail' pokemon.pk %}"
+                                   class="btn btn-dark w-100 fw-semibold rounded-pill py-2 shadow-sm">
+                                    Ver Detalles
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
 
-        <!-- PAGINACIÓN -->
+        <!-- Paginación -->
         {% if pokemons.has_other_pages %}
             <div class="d-flex justify-content-center mt-5">
                 <nav>
-                    <ul class="pagination">
+                    <ul class="pagination shadow rounded-pill overflow-hidden">
                         {% if pokemons.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ pokemons.previous_page_number }}">
-                                    Anterior
-                                </a>
+                                <a class="page-link border-0 bg-dark text-white" href="?page={{ pokemons.previous_page_number }}">Anterior</a>
                             </li>
                         {% endif %}
 
                         {% for i in pokemons.paginator.page_range %}
                             <li class="page-item {% if pokemons.number == i %}active{% endif %}">
-                                <a class="page-link" href="?page={{ i }}">
-                                    {{ i }}
-                                </a>
+                                <a class="page-link border-0" href="?page={{ i }}">{{ i }}</a>
                             </li>
                         {% endfor %}
 
                         {% if pokemons.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ pokemons.next_page_number }}">
-                                    Siguiente
-                                </a>
+                                <a class="page-link border-0 bg-dark text-white" href="?page={{ pokemons.next_page_number }}">Siguiente</a>
                             </li>
                         {% endif %}
                     </ul>
                 </nav>
             </div>
-
-            <div class="text-center text-muted mb-4">
+            <div class="text-center text-secondary small mt-2 mb-4">
                 Página {{ pokemons.number }} de {{ pokemons.paginator.num_pages }}
             </div>
         {% endif %}
     {% endif %}
 
 </div>
+
+<style>
+    .hover-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0,0,0,.4)!important;
+    }
+</style>
 {% endblock %}
