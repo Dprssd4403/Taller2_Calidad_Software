@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Pokédex - Lista
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Pokédex</h1>
+        <p class="text-muted">
+            Lista de Pokémon
+        </p>
+    </div>
+
+    <div class="text-center mb-4 d-flex justify-content-center gap-2">
+        <form action="{% url 'pokemon_sync_api' %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                Cargar Pokémon
+            </button>
+        </form>
+        <a href="{% url 'pokemon_create' %}" class="btn btn-outline-primary">
+            + Crear Manualmente
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if not pokemons %}
+        <div class="alert alert-info text-center">
+            No hay Pokémon cargados en la base de datos.
+        </div>
+    {% else %}
+        <div class="row g-4">
+            {% for pokemon in pokemons %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 shadow-sm text-center">
+                        {% if pokemon.sprite_url %}
+                            <img src="{{ pokemon.sprite_url }}"
+                                 class="card-img-top p-3"
+                                 alt="{{ pokemon.name }}"
+                                 style="height: 200px; object-fit: contain;">
+                        {% endif %}
+
+                        <div class="card-body">
+                            <h5 class="card-title text-capitalize">
+                                #{{ pokemon.poke_id }} - {{ pokemon.name }}
+                            </h5>
+
+                            <p class="card-text">
+                                <strong>Altura:</strong> {{ pokemon.height }} m<br>
+                                <strong>Peso:</strong> {{ pokemon.weight }} kg
+                            </p>
+
+                            <a href="{% url 'pokemon_detail' pokemon.pk %}"
+                               class="btn btn-primary btn-sm">
+                                Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- PAGINACIÓN -->
+        {% if pokemons.has_other_pages %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav>
+                    <ul class="pagination">
+                        {% if pokemons.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pokemons.previous_page_number }}">
+                                    Anterior
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in pokemons.paginator.page_range %}
+                            <li class="page-item {% if pokemons.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}">
+                                    {{ i }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if pokemons.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pokemons.next_page_number }}">
+                                    Siguiente
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="text-center text-muted mb-4">
+                Página {{ pokemons.number }} de {{ pokemons.paginator.num_pages }}
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
+{% endblock %}
